@@ -1,0 +1,1027 @@
+<html>
+<head>
+<style type="text/css">
+/**
+ * HTML5 ✰ Boilerplate
+ *
+ * style.css contains a reset, font normalization and some base styles.
+ *
+ * Credit is left where credit is due.
+ * Much inspiration was taken from these projects:
+ * - yui.yahooapis.com/2.8.1/build/base/base.css
+ * - camendesign.com/design/
+ * - praegnanz.de/weblog/htmlcssjs-kickstart
+ */
+
+
+/**
+ * html5doctor.com Reset Stylesheet (Eric Meyer's Reset Reloaded + HTML5 baseline)
+ * v1.6.1 2010-09-17 | Authors: Eric Meyer & Richard Clark
+ * html5doctor.com/html-5-reset-stylesheet/
+ */
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+sup { vertical-align: super; }
+sub { vertical-align: sub; }
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+blockquote, q { quotes: none; }
+
+blockquote:before, blockquote:after,
+q:before, q:after { content: ""; content: none; }
+
+ins { background-color: #ff9; color: #000; text-decoration: none; }
+
+mark { background-color: #ff9; color: #000; font-style: italic; font-weight: bold; }
+
+del { text-decoration: line-through; }
+
+abbr[title], dfn[title] { border-bottom: 1px dotted; cursor: help; }
+
+table { border-collapse: collapse; border-spacing: 0; }
+
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
+
+input, select { vertical-align: middle; }
+
+
+/**
+ * Font normalization inspired by YUI Library's fonts.css: developer.yahoo.com/yui/
+ */
+
+body { font:13px/1.231 sans-serif; *font-size:small; } /* Hack retained to preserve specificity */
+select, input, textarea, button { font:99% sans-serif; }
+
+/* Normalize monospace sizing:
+   en.wikipedia.org/wiki/MediaWiki_talk:Common.css/Archive_11#Teletype_style_fix_for_Chrome */
+pre, code, kbd, samp { font-family: monospace, sans-serif; }
+
+em,i { font-style: italic; }
+b,strong { font-weight: bold; }
+
+</style>
+<style type="text/css">
+
+/* Flexible box model classes */
+/* Taken from Alex Russell http://infrequently.org/2009/08/css-3-progress/ */
+ 
+.hbox {
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+	-webkit-box-align: stretch;
+ 
+	display: -moz-box;
+	-moz-box-orient: horizontal;
+	-moz-box-align: stretch;
+ 
+	display: box;
+	box-orient: horizontal;
+	box-align: stretch;
+}
+ 
+.hbox > * {
+	-webkit-box-flex: 0;
+	-moz-box-flex: 0;
+	box-flex: 0;
+}
+ 
+.vbox {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-box-align: stretch;
+ 
+	display: -moz-box;
+	-moz-box-orient: vertical;
+	-moz-box-align: stretch;
+ 
+	display: box;
+	box-orient: vertical;
+	box-align: stretch;
+}
+ 
+.vbox > * {
+	-webkit-box-flex: 0;
+	-moz-box-flex: 0;
+	box-flex: 0;
+}
+  
+.reverse {
+	-webkit-box-direction: reverse;
+	-moz-box-direction: reverse;
+	box-direction: reverse;
+}
+ 
+.box-flex0 {
+	-webkit-box-flex: 0;
+	-moz-box-flex: 0;
+	box-flex: 0;
+}
+ 
+.box-flex1, .box-flex {
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;
+}
+ 
+.box-flex2 {
+	-webkit-box-flex: 2;
+	-moz-box-flex: 2;
+	box-flex: 2;
+}
+ 
+.box-group1 {
+	-webkit-box-flex-group: 1;
+	-moz-box-flex-group: 1;
+	box-flex-group: 1;
+}
+ 
+.box-group2 {
+	-webkit-box-flex-group: 2;
+	-moz-box-flex-group: 2;
+	box-flex-group: 2;
+}
+ 
+.start {
+	-webkit-box-pack: start;
+	-moz-box-pack: start;
+	box-pack: start;
+}
+ 
+.end {
+	-webkit-box-pack: end;
+	-moz-box-pack: end;
+	box-pack: end;
+}
+ 
+.center {
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	box-pack: center;
+}
+
+</style>
+<style type="text/css">
+/**
+ * Primary styles
+ *
+ * Author: IPython Development Team
+ */
+
+
+body {
+    overflow: hidden;
+}
+
+blockquote {
+    border-left: 4px solid #DDD;
+    padding: 0 15px;
+    color: #777;
+}
+
+span#save_widget {
+    padding: 5px;
+    margin: 0px 0px 0px 300px;
+    display:inline-block;
+}
+
+span#notebook_name {
+    height: 1em;
+    line-height: 1em;
+    padding: 3px;
+    border: none;
+    font-size: 146.5%;
+}
+
+
+.ui-menubar-item .ui-button .ui-button-text {
+    padding: 0.4em 1.0em;
+    font-size: 100%;
+}
+
+.ui-menu {
+  -moz-box-shadow:    0px 6px 10px -1px #adadad;
+  -webkit-box-shadow: 0px 6px 10px -1px #adadad;
+  box-shadow:         0px 6px 10px -1px #adadad;
+}
+
+.ui-menu .ui-menu-item a {
+    border: 1px solid transparent;
+    padding: 2px 1.6em;
+}
+
+.ui-menu .ui-menu-item a.ui-state-focus {
+    margin: 0;
+}
+
+.ui-menu hr {
+    margin: 0.3em 0;
+}
+
+#menubar_container {
+    position: relative;
+}
+
+#notification_area {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    height: 25px;
+    padding: 3px 0px;
+    padding-right: 3px;
+    z-index: 10;
+}
+
+.notification_widget{
+    float : right;
+    right: 0px;
+    top: 1px;
+    height: 25px;
+    padding: 3px 6px;
+    z-index: 10;
+}
+
+.toolbar {
+    padding: 3px 15px;
+}
+
+#maintoolbar > select, #maintoolbar label {
+    font-size: 85%;
+    margin-left:0.3em;
+    margin-right:0.3em;
+
+}
+
+
+div#main_app {
+    width: 100%;
+    position: relative;
+}
+
+span#quick_help_area {
+    position: static;
+    padding: 5px 0px;
+    margin: 0px 0px 0px 0px;
+}
+
+.help_string {
+    float: right;
+    width: 170px;
+    padding: 0px 5px;
+    text-align: left;
+    font-size: 85%;
+}
+
+.help_string_label {
+    float: right;
+    font-size: 85%;
+}
+
+div#notebook_panel {
+    margin: 0px 0px 0px 0px;
+    padding: 0px;
+}
+
+div#notebook {
+    overflow-y: scroll;
+    overflow-x: auto;
+    width: 100%;
+    /* This spaces the cell away from the edge of the notebook area */
+    padding: 5px 5px 15px 5px;
+    margin: 0px;
+    background-color: white;
+}
+
+div#pager_splitter {
+    height: 8px;
+}
+
+#pager_container {
+    position : relative;
+}
+
+div#pager {
+    padding: 15px;
+    overflow: auto;
+    display: none;
+}
+
+div.ui-widget-content {
+    border: 1px solid #aaa;
+    outline: none;
+}
+
+.cell {
+    border: 1px solid transparent;
+}
+
+div.cell {
+    width: 100%;
+    padding: 5px 5px 5px 0px;
+    /* This acts as a spacer between cells, that is outside the border */
+    margin: 2px 0px 2px 0px;
+}
+
+div.code_cell {
+    background-color: white;
+}
+
+/* any special styling for code cells that are currently running goes here */
+div.code_cell.running {
+}
+
+div.prompt {
+    /* This needs to be wide enough for 3 digit prompt numbers: In[100]: */
+    width: 11ex;
+    /* This 0.4em is tuned to match the padding on the CodeMirror editor. */
+    padding: 0.4em;
+    margin: 0px;
+    font-family: monospace;
+    text-align:right;
+}
+
+div.input {
+    page-break-inside: avoid;
+}
+
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_area {
+    color: black;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #f7f7f7;
+}
+
+div.input_prompt {
+    color: navy;
+    border-top: 1px solid transparent;
+}
+
+div.output_wrapper {
+    /* This is a spacer between the input and output of each cell */
+    margin-top: 5px;
+    margin-left: 5px;
+    /* FF needs explicit width to stretch */
+    width: 100%;
+    /* this position must be relative to enable descendents to be absolute within it */
+    position: relative;
+}
+
+/* class for the output area when it should be height-limited */
+div.output_scroll {
+  /* ideally, this would be max-height, but FF barfs all over that */
+  height: 24em;
+  /* FF needs this *and the wrapper* to specify full width, or it will shrinkwrap */
+  width: 100%;
+  
+  overflow: auto;
+  border-radius: 3px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, .8);
+}
+
+/* output div while it is collapsed */
+div.output_collapsed {
+  margin-right: 5px;
+}
+
+div.out_prompt_overlay {
+  height: 100%;
+  padding: 0px;
+  position: absolute;
+  border-radius: 3px;
+}
+
+div.out_prompt_overlay:hover {
+  /* use inner shadow to get border that is computed the same on WebKit/FF */
+  box-shadow: inset 0 0 1px #000;
+  background: rgba(240, 240, 240, 0.5);
+}
+
+div.output_prompt {
+    color: darkred;
+    /* 5px right shift to account for margin in parent container */
+    margin: 0 5px 0 -5px;
+}
+
+/* This class is the outer container of all output sections. */
+div.output_area {
+    padding: 0px;
+    page-break-inside: avoid;
+}
+
+/* This class is for the output subarea inside the output_area and after
+   the prompt div. */
+div.output_subarea {
+    padding: 0.44em 0.4em 0.4em 1px;
+}
+
+/* The rest of the output_* classes are for special styling of the different
+   output types */
+
+/* all text output has this class: */
+div.output_text {
+    text-align: left;
+    color: black;
+    font-family: monospace;
+}
+
+/* stdout/stderr are 'text' as well as 'stream', but pyout/pyerr are *not* streams */
+div.output_stream {
+    padding-top: 0.0em;
+    padding-bottom: 0.0em;
+}
+div.output_stdout {
+}
+div.output_stderr {
+    background: #fdd; /* very light red background for stderr */
+}
+
+div.output_latex {
+    text-align: left;
+    color: black;
+}
+
+div.output_html {
+}
+
+div.output_png {
+}
+
+div.output_jpeg {
+}
+
+div.text_cell {
+    background-color: white;
+    padding: 5px 5px 5px 5px;
+}
+
+div.text_cell_input {
+    color: black;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #f7f7f7;
+}
+
+div.text_cell_render {
+    font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    outline: none;
+    resize: none;
+    width:  inherit;
+    border-style: none;
+    padding: 5px;
+    color: black;
+}
+
+/* The following gets added to the <head> if it is detected that the user has a
+ * monospace font with inconsistent normal/bold/italic height.  See
+ * notebookmain.js.  Such fonts will have keywords vertically offset with
+ * respect to the rest of the text.  The user should select a better font. 
+ * See: https://github.com/ipython/ipython/issues/1503
+ *
+ * .CodeMirror span {
+ *      vertical-align: bottom;
+ * }
+ */
+
+.CodeMirror {
+    line-height: 1.231;  /* Changed from 1em to our global default */
+}
+
+.CodeMirror-scroll {
+    height: auto;     /* Changed to auto to autogrow */
+    /*  The CodeMirror docs are a bit fuzzy on if overflow-y should be hidden or visible.*/
+    /*  We have found that if it is visible, vertical scrollbars appear with font size changes.*/
+    overflow-y: hidden;
+    overflow-x: auto; /* Changed from auto to remove scrollbar */
+}
+
+/* CSS font colors for translated ANSI colors. */
+
+
+.ansiblack {color: black;}
+.ansired {color: darkred;}
+.ansigreen {color: darkgreen;}
+.ansiyellow {color: brown;}
+.ansiblue {color: darkblue;}
+.ansipurple {color: darkviolet;}
+.ansicyan {color: steelblue;}
+.ansigrey {color: grey;}
+.ansibold {font-weight: bold;}
+
+.completions {
+    position: absolute;
+    z-index: 10;
+    overflow: hidden;
+    border: 1px solid grey;
+}
+
+.completions select {
+    background: white;
+    outline: none;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+    overflow: auto;
+    font-family: monospace;
+}
+
+option.context {
+  background-color: #DEF7FF;
+}
+option.introspection {
+  background-color: #EBF4EB;
+}
+
+/*fixed part of the completion*/
+.completions p b {
+    font-weight:bold;
+}
+
+.completions p {
+    background: #DDF;
+    /*outline: none;
+    padding: 0px;*/
+    border-bottom: black solid 1px;
+    padding: 1px;
+    font-family: monospace;
+}
+
+pre.dialog {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 0.4em;
+    padding-left: 2em;
+}
+
+p.dialog {
+    padding : 0.2em;
+}
+
+.shortcut_key {
+    display: inline-block;
+    width: 15ex;
+    text-align: right;
+    font-family: monospace;
+}
+
+.shortcut_descr {
+}
+
+/* Word-wrap output correctly.  This is the CSS3 spelling, though Firefox seems
+   to not honor it correctly.  Webkit browsers (Chrome, rekonq, Safari) do.
+ */
+pre, code, kbd, samp { white-space: pre-wrap; }
+
+#fonttest {
+    font-family: monospace;
+}
+
+.js-error {
+    color: darkred;
+}
+
+</style>
+<style type="text/css">
+.rendered_html {color: black;}
+.rendered_html em {font-style: italic;}
+.rendered_html strong {font-weight: bold;}
+.rendered_html u {text-decoration: underline;}
+.rendered_html :link { text-decoration: underline }
+.rendered_html :visited { text-decoration: underline }
+.rendered_html h1 {font-size: 197%; margin: .65em 0; font-weight: bold;}
+.rendered_html h2 {font-size: 153.9%; margin: .75em 0; font-weight: bold;}
+.rendered_html h3 {font-size: 123.1%; margin: .85em 0; font-weight: bold;}
+.rendered_html h4 {font-size: 100% margin: 0.95em 0; font-weight: bold;}
+.rendered_html h5 {font-size: 85%; margin: 1.5em 0; font-weight: bold;}
+.rendered_html h6 {font-size: 77%; margin: 1.65em 0; font-weight: bold;}
+.rendered_html ul {list-style:disc; margin: 1em 2em;}
+.rendered_html ul ul {list-style:square; margin: 0em 2em;}
+.rendered_html ul ul ul {list-style:circle; margin-left: 0em 2em;}
+.rendered_html ol {list-style:decimal; margin: 1em 2em;}
+.rendered_html ol ol {list-style:upper-alpha; margin: 0em 2em;}
+.rendered_html ol ol ol {list-style:lower-alpha; margin: 0em 2em;}
+.rendered_html ol ol ol ol {list-style:lower-roman; margin: 0em 2em;}
+/* any extras will just be numbers: */
+.rendered_html ol ol ol ol ol {list-style:decimal; margin: 0em 2em;}
+
+.rendered_html hr {
+    color: black;
+    background-color: black;
+}
+
+.rendered_html pre {
+    margin: 1em 2em;
+}
+
+.rendered_html blockquote {
+    margin: 1em 2em;
+}
+
+.rendered_html table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin: 1em 2em;
+}
+
+.rendered_html td {
+    border: 1px solid black;
+    text-align: left;
+    vertical-align: middle;
+    padding: 4px;
+}
+
+.rendered_html th {
+    border: 1px solid black;
+    text-align: left;
+    vertical-align: middle;
+    padding: 4px;
+    font-weight: bold;
+}
+
+.rendered_html tr {
+    border: 1px solid black;
+}    
+
+.rendered_html p + p {
+    margin-top: 1em;
+}
+
+
+</style>
+<style type="text/css">
+/* Overrides of notebook CSS for static HTML export
+
+*/
+body {
+  overflow: visible;
+  padding: 8px;
+}
+.input_area {
+  padding: 0.4em;
+}
+
+</style>
+<meta charset="UTF-8">
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+<script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript">
+
+</script>
+<script type="text/javascript">
+init_mathjax = function() {
+    if (window.MathJax) {
+        // MathJax loaded
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+            },
+            displayAlign: 'left', // Change this to 'center' to center equations.
+            "HTML-CSS": {
+                styles: {'.MathJax_Display': {"margin": 0}}
+            }
+        });
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+    }
+}
+init_mathjax();
+</script>
+</head>
+<body>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1>Matrix equation solver</h1>
+<ul>
+<li>N = 1024</li>
+<li>Seed 1927</li>
+<li>Burn-in 1 000 000 thrown away random numbers.</li>
+<li>Test, n = 512</li>
+<li>Initial value: V[512] = 512/1024 = 0.5</li>
+</ul>
+<h3>Convergence</h3>
+<table>
+    <tr> 
+        <td> <b>err</b> </td> <td> <b>Jacobi</b> </td> <td> <b>Gauss-Seidel</b> </td> <td> <b>SOR</b> </td> <td> <b>Conj. Grad.</b> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-004 </td> 
+        <td> 0.<font color="red">4989999148</font> </td> 
+        <td> 0.<font color="red">4983491085</font> </td> 
+        <td> 0.<font color="red">4983481119</font> </td> 
+        <td> 0.<font color="red">4973615970</font> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-005 </td>
+        <td> 0.5<font color="red">435457443</font> </td> 
+        <td> 0.<font color="red">4995426995</font> </td> 
+        <td> 0.<font color="red">4995425196</font> </td> 
+        <td> 0.5<font color="red">197445142</font> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-006 </td> 
+        <td> 0.5<font color="red">496996415</font> </td> 
+        <td> 0.5<font color="red">201025634</font> </td> 
+        <td> 0.5<font color="red">201025389</font> </td> 
+        <td> 0.55038<font color="red">27366</font> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-007 </td> 
+        <td> 0.5503<font color="red">149718</font> </td> 
+        <td> 0.5<font color="red">442985904</font> </td> 
+        <td> 0.5<font color="red">442985972</font> </td> 
+        <td> 0.5503833<font color="red">642</font> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-008 </td> 
+        <td> 0.5503<font color="red">765049</font> </td> 
+        <td> 0.5<font color="red">497749116</font> </td> 
+        <td> 0.5<font color="red">497749109</font> </td> 
+        <td> 0.5503833<font color="red">391</font> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-009 </td> 
+        <td> 0.55038<font color="red">26582</font> </td> 
+        <td> 0.5503<font color="red">224988</font> </td> 
+        <td> 0.5503<font color="red">224988</font> </td> 
+        <td> 0.55038334<font color="red">23</font> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-010 </td> 
+        <td> 0.550383<font color="red">2735</font> </td> 
+        <td> 0.5503<font color="red">772576</font> </td> 
+        <td> 0.5503<font color="red">772576</font> </td> 
+        <td> 0.5503833419<font color="red"></font> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-011 </td> 
+        <td> 0.5503833<font color="red">350</font> </td> 
+        <td> 0.55038<font color="red">27334</font> </td> 
+        <td> 0.55038<font color="red">27334</font> </td> 
+        <td> 0.5503833419<font color="red"></font> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-012 </td> 
+        <td> 0.550383341<font color="red">2</font> </td> 
+        <td> 0.550383<font color="red">2810</font> </td> 
+        <td> 0.550383<font color="red">2810</font> </td> 
+        <td> 0.5503833419<font color="red"></font> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-013 </td> 
+        <td> 0.550383341<font color="red">8</font> </td> 
+        <td> 0.5503833<font color="red">358</font> </td> 
+        <td> 0.5503833<font color="red">358</font> </td> 
+        <td> 0.5503833419<font color="red"></font> </td>
+    </tr>
+</table>
+
+<h3>Iterations</h3>
+<table>
+    <tr> 
+        <td> <b>err</b> </td> <td> <b>Jacobi</b> </td> <td> <b>Gauss-Seidel</b> </td> <td> <b>SOR</b> </td> <td> <b>Conj. Grad.</b> </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-004 </td> 
+        <td> 37280 </td> 
+        <td> 132 </td> 
+        <td> 88 </td> 
+        <td> 309 </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-005 </td> 
+        <td> 1581004 </td> 
+        <td> 8003 </td> 
+        <td> 5336 </td> 
+        <td> 1156 </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-006 </td> 
+        <td> 3578544 </td> 
+        <td> 164399 </td> 
+        <td> 109599 </td> 
+        <td> 1752 </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-007 </td> 
+        <td> 5576082 </td> 
+        <td> 836532 </td> 
+        <td> 557688 </td> 
+        <td> 1764 </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-008 </td> 
+        <td> 7573622 </td> 
+        <td> 1835310 </td> 
+        <td> 1223539 </td> 
+        <td> 1776 </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-009 </td> 
+        <td> 9571148 </td> 
+        <td> 2834079 </td> 
+        <td> 1889385 </td> 
+        <td> 1787 </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-010 </td> 
+        <td> 11568972 </td> 
+        <td> 3832849 </td> 
+        <td> 2555231 </td> 
+        <td> 1803 </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-011 </td> 
+        <td> 13561762 </td> 
+        <td> 4831618 </td> 
+        <td> 3221076 </td> 
+        <td> 1816 </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-012 </td> 
+        <td> 15558332 </td> 
+        <td> 5830373 </td> 
+        <td> 3886903 </td> 
+        <td> 1839 </td>
+    </tr>
+    <tr> 
+        <td> 2.00E-013 </td> 
+        <td> 17464688 </td> 
+        <td> 6828824 </td> 
+        <td> 4552512 </td> 
+        <td> 1860 </td>
+    </tr>
+</table>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><br></p>
+<h2>Tips</h2>
+<ul>
+<li>Do <strong>not</strong> use generic methods.<ul>
+<li>Do not use matrix classes or structures.</li>
+<li>Do not use matrix operations.</li>
+<li><strong>Reason</strong>: For sparse, tridiagonal matrices (our case), there will be $N^2 - N - 2\cdot (N-1) = N(N-3)+2$ zeros.</li>
+</ul>
+</li>
+<li>Use specific methods based on the situation.</li>
+</ul>
+<p>Solving dense and sparse matrix problems are two huge, totally different fields.</p>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><br></p>
+<h2>Problem</h2>
+<p>Solve, $A \mathbf{x} = \mathbf{b}$</p>
+<p>$$A=\begin{bmatrix} a_{11} &amp; a_{12} &amp; \cdots &amp; a_{1n} \\ a_{21} &amp; a_{22} &amp; \cdots &amp; a_{2n} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ a_{n1} &amp; a_{n2} &amp; \cdots &amp; a_{nn} \end{bmatrix}, \qquad  \mathbf{x} = \begin{bmatrix} x_{1} \\ x_2 \\ \vdots \\ x_n \end{bmatrix} , \qquad  \mathbf{b} = \begin{bmatrix} b_{1} \\ b_2 \\ \vdots \\ b_n \end{bmatrix}$$</p>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>So, if we have N = 1000 resistors, we have the system of equations for the unknowns,</p>
+<p>$$-c_{i-1} v_{i-1} + (c_{i-1}  + c_{i})v_i - c_i v_{i+1} = 0, i = 1,..,999$$</p>
+<p>For $i = 1$ and $i = 999$, we may rewrite</p>
+<p>$$(c_0 + c_1)v_1 - c_1 v_2 = c_0 v_0$$</p>
+<p>$$-c_{998}v_{998} + (c_{998} + c_{999} ) v_{999} = c_{999}v_{1000}$$</p>
+<p>since $v_0$ and $v_{1000}$ are known. And, in matrix form:</p>
+<p>$$A = \begin{bmatrix} 
+(c_0 + c_1) &amp; -c_1 &amp; 0 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\ 
+-c_1 &amp; (c_1 + c_2) &amp; -c_2 &amp; 0 &amp; \cdots &amp; 0 &amp; 0 \\
+0 &amp; -c_2 &amp; (c_2 + c_3) &amp; -c_3 &amp; \cdots &amp; 0 &amp; 0 \\ 
+\vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots \\
+\vdots &amp; \vdots &amp; 0 &amp; 0 &amp; \cdots &amp; (c_{997} + c_{998}) &amp; -c_{998} \\
+0 &amp; 0 &amp; 0 &amp; 0 &amp; \cdots &amp; -c_{998} &amp; (c_{998} + c_{999}) 
+\end{bmatrix}
+\qquad
+\mathbf{x} = \begin{bmatrix} v_1 \\ v_2 \\ \vdots \\ v_{999} \end{bmatrix}
+\qquad
+\mathbf{b} = \begin{bmatrix} c_0 v_0 \\ 0 \\ \vdots \\ c_{999} v_{1000} \end{bmatrix}
+$$</p>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><br></p>
+<h2>Jacobi Method</h2>
+<p>$$A=D+R \qquad \text{where} \qquad D = \begin{bmatrix} a_{11} &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; a_{22} &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; a_{nn} \end{bmatrix} \text{ and } R = \begin{bmatrix} 0 &amp; a_{12} &amp; \cdots &amp; a_{1n} \\ a_{21} &amp; 0 &amp; \cdots &amp; a_{2n} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ a_{n1} &amp; a_{n2} &amp; \cdots &amp; 0 \end{bmatrix}$$</p>
+<h3>Matrix form:</h3>
+<p>$$ \mathbf{x}^{(k+1)} = D^{-1} (\mathbf{b} - R \mathbf{x}^{(k)}) $$</p>
+<h3>Elementwise form:</h3>
+<p>$$ x_i^{(k+1)}  = \frac{1}{a_{ii}} \left(b_i -\sum_{j\ne i}a_{ij}x^{(k)}_j\right),\quad i=1,2,\ldots,n $$</p>
+<ul>
+<li>Only 2 terms in the sum, $a_{i,i-1},~ a_{i,i+1}$ for our problem.</li>
+<li>All the next values depend on all the previous values. Need to use a temporary array.</li>
+</ul>
+<p>This means that, the elementwise form reduces to</p>
+<p>$$x_i^{(k+1)}  = \frac{1}{a_{ii}} \left(b_i - (a_{i,i-1}x_{i-1}^{(k)} + a_{i,i+1}x_{i+1}^{(k)})\right),\quad i=1,2,\ldots,n$$</p>
+<p>where special care needs to be taken for $i = 1$, and $i = n$.</p>
+<p>This means that the Jacobi method reduces to in our case, for n = 1000:</p>
+<p>$$ \begin{bmatrix} v_1^{(k+1)} \\ v_2^{(k+1)} \\ \vdots \\ v_{999}^{(k+1)} \end{bmatrix} = \begin{bmatrix} \frac{c_0 v_0^{(k)} + c_1 v_2^{(k)}}{c_0 + c_1} \\ \frac{c_1 v_1^{(k)} + c_2 v_3^{(k)}}{c_1 + c_2} \\ \vdots \\ \frac{c_{998} v_{998}^{(k)} + c_{999} v_{1000}^{(k)}}{c_{998} + c_{999}} \end{bmatrix}$$</p>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><br></p>
+<h2>Gauss-Seidel</h2>
+<p>$$A = \bar{L} + U \qquad \text{where} \qquad \bar L = \begin{bmatrix} a_{11} &amp; 0 &amp; \cdots &amp; 0 \\ a_{21} &amp; a_{22} &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ a_{n1} &amp; a_{n2} &amp; \cdots &amp; a_{nn} \end{bmatrix}, \quad U = \begin{bmatrix} 0 &amp; a_{12} &amp; \cdots &amp; a_{1n} \\ 0 &amp; 0 &amp; \cdots &amp; a_{2n} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; 0 \end{bmatrix}.$$</p>
+<h3>Matrix form</h3>
+<p>$$\mathbf{x}^{(k+1)} = \bar{L}^{-1} (\mathbf{b} - U \mathbf{x}^{(k)})$$</p>
+<h3>Elementwise form</h3>
+<p>$$x_i^{(k+1)}  = \frac{1}{a_{ii}} \left(b_i - \sum_{j \lt i}a_{ij}x_j^{(k+1)} - \sum_{j \gt i}a_{ij}x_j^{(k)} \right),\quad i=1,2,\ldots,n$$</p>
+<ul>
+<li>Still only two terms from the sums, one in each sum.</li>
+<li>No need for a temporary array. </li>
+</ul>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><br></p>
+<h2>Successive Over-Relaxation (SOR)</h2>
+<p>$$A=D + L + U \qquad \text{where} \qquad D = \begin{bmatrix} a_{11} &amp; 0 &amp; \cdots &amp; 0 \\ 0 &amp; a_{22} &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; a_{nn} \end{bmatrix}, \quad L = \begin{bmatrix} 0 &amp; 0 &amp; \cdots &amp; 0 \\ a_{21} &amp; 0 &amp; \cdots &amp; 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ a_{n1} &amp; a_{n2} &amp; \cdots &amp; 0 \end{bmatrix}, \quad U = \begin{bmatrix} 0 &amp; a_{12} &amp; \cdots &amp; a_{1n} \\ 0 &amp; 0 &amp; \cdots &amp; a_{2n} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; 0 &amp; \cdots &amp; 0 \end{bmatrix}$$</p>
+<h3>Matrix form</h3>
+<p>$$\mathbf{x}^{(k+1)} = (D+\omega L)^{-1} \big(\omega \mathbf{b} - [\omega U + (\omega-1) D ] \mathbf{x}^{(k)}\big)$$</p>
+<h3>Elementwise form</h3>
+<p>$$x_i^{(k+1)}  = (1-\omega)x_i^{(k)} + \frac{\omega}{a_{ii}} \left(b_i - \sum_{j \lt i} a_{ij}x_j^{(k+1)} - \sum_{j \gt i} a_{ij}x_j^{(k)} \right),\quad i=1,2,\ldots,n$$</p>
+<ul>
+<li>Still only two elements, one for each sum</li>
+<li>Need a temporary array</li>
+</ul>
+</div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><br></p>
+<h2>Convergence?</h2>
+<p>Check if <strong>current in</strong> is equal to <strong>current out</strong>, then square the differences, add, and square root (pythagoras!). This gives you a measure of the total error. </p>
+</div>
+</body>
+</html>

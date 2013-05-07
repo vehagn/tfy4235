@@ -4,9 +4,9 @@
 #include <memory.h>
 #include <ctime>
 
-const double R = 1.;
+const double R = .5;
 const double PI = 4.*atan(1);
-const double XI = R/10;
+const double XI = 2*R;
 
 typedef struct{
 	double xpos;
@@ -18,11 +18,12 @@ double rand0to1();
 int randi(int max);
 
 double discDistanceSq(Disc a, Disc b);
+double distance1D(Disc a, Disc b);
 int collisionCheck(Disc a, Disc b, double dx, double dy);
 
 void placeDiscs(Disc a[], double Lx, double Ly, int N);
-void bSort(int sort[], Disc a[], int start, int end);
-void jiggleDisc(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly);
+void bSort(int xsort[], int ysort[], Disc a[], int end);
+void jiggleDisc(Disc a[], int xsort[], int ysort[], int N, int M, double Lx, double Ly);
 void pushDisc(Disc a[], int xsort[], int ysort[], int n, int N);
 int checkLeaks(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly);
 
@@ -53,49 +54,44 @@ int main (int argc, char** argv){
 		ysort[i] = i;
 	}
 
-	bSort(xsort, discs, 0, N);
-	bSort(ysort, discs, 0, N);	
+	bSort(xsort, ysort, discs, N);	
 	M = N + checkLeaks(discs, xsort, ysort, N, Lx, Ly);	
-
-	/*printf("xpos:\t");
-	for (int i = 0; i < N; i++){
-		printf("%4.2f\t",discs[xsort[i]].xpos);
-	}
-	printf("\nypos:\t");
-	for (int i = 0; i < N; i++){
-		printf("%4.2f\t",discs[ysort[i]].ypos);
-	}
-	printf("\ncoords:\t");
-	for (int i = 0; i < N; i++)
-		printf("%i:(%4.2f,%4.2f) ",xsort[i],discs[xsort[i]].xpos,discs[xsort[i]].ypos);
-	printf("\n");
-	
-	for (int i = 0; i < N; i++){
-		for (int j = i; j < N; j++){
-			printf("Distance Sq %i %i: %f\n",i,j,discDistanceSq(discs[i],discs[j]));		
-		}
-	}*/
 	
 	int collisions = 0;
 	for (int i = 0; i < N; i++){
-		for (int j = i+1; j < N; j++){
-			collisions += collisionCheck(discs[i],discs[j],0,0);
+		for (int j = i+1; j < M; j++){
+			if (collisionCheck(discs[i],discs[j],0,0)){
+				collisions++;
+				printf("(%4.2f,%4.2f)\t(%4.2f,%4.2f)\n",discs[i].xpos,discs[i].ypos,discs[j].xpos,discs[j].ypos);
+			}
 		}
 	}
 	printf("Collisions %i\n",collisions);
 	
+	printf("M: %i\n",M);
 	printDiscs(discs, N, M, 0);
-	for(int i = 0; i < 50000; i++){
-		jiggleDisc(discs, xsort, ysort, N, Lx, Ly);
-	}	
 
+	int jiggles = 5000;
+	for(int i = 0; i < jiggles; i++){
+		//printf("%i \n",i);
+		//if(!(i%(jiggles/100))){printf("%2.0f \n",100.*(i/(double)jiggles));}
+		jiggleDisc(discs, xsort, ysort, N, M, Lx, Ly);
+		bSort(xsort, ysort, discs,  N);
+		M = N + checkLeaks(discs, xsort, ysort, N, Lx, Ly);
+	}	
+	printf("\nM: %i\n",M);
 	printDiscs(discs, N, M, 1);
 
+	collisions = 0;
 	for (int i = 0; i < N; i++){
-		for (int j = i+1; j < N; j++){
-			collisions += collisionCheck(discs[i],discs[j],0,0);
+		for (int j = i+1; j < M; j++){
+			if (collisionCheck(discs[i],discs[j],0,0)){
+				collisions++;
+				printf("(%4.2f,%4.2f)\t(%4.2f,%4.2f)\n",discs[i].xpos,discs[i].ypos,discs[j].xpos,discs[j].ypos);
+			}
 		}
 	}
+
 	printf("Collisions %i\n",collisions);
 	return 0;
 }
@@ -112,11 +108,9 @@ double discDistanceSq(Disc a, Disc b){
 }
 
 int collisionCheck(Disc a, Disc b, double dx, double dy){
-	if (((a.xpos+dx-b.xpos) < (a.r+b.r)) || ((a.ypos+dy-b.ypos) < (a.r+b.r))){
-		if (((a.xpos+dx-b.xpos)*(a.xpos+dx-b.xpos)+(a.ypos+dy-b.ypos)*(a.ypos+dy-b.ypos)) < (a.r+b.r)*(a.r+b.r)){
-			//printf("%f\n",(((a.xpos+dx-b.xpos)*(a.xpos+dx-b.xpos)+(a.ypos+dy-b.ypos)*(a.ypos+dy-b.ypos))));
-			return 1;
-		}else {return 0;}
+	if (((a.xpos+dx-b.xpos) < 2*R) || ((a.ypos+dy-b.ypos) < 2*R)){
+		if (((a.xpos+dx-b.xpos)*(a.xpos+dx-b.xpos)+(a.ypos+dy-b.ypos)*(a.ypos+dy-b.ypos)) < (a.r+b.r)*(a.r+b.r)){return 1;}
+		else {return 0;}
 	}else {return 0;}
 }
 
@@ -129,8 +123,6 @@ void placeDiscs(Disc a[], double Lx, double Ly, int N){
 		a[i].xpos = Lx*rand0to1();
 		a[i].ypos = Ly*rand0to1();
 		for (int j = 0; j < i; j++){
-		/*	if (((a[i].xpos - a[j].xpos)*(a[i].xpos - a[j].xpos) + 
-				(a[i].ypos - a[j].ypos)*(a[i].ypos - a[j].ypos)) < (a[i].r+a[j].r)*(a[i].r+a[j].r)){*/
 			if (collisionCheck(a[i],a[j],0,0)){
 				i--;
 				//printf("COLLISION!!!\t %i\t %4.2f\t %4.2f\n",i,a[i].xpos,a[i].ypos);
@@ -162,7 +154,7 @@ void placeDiscs(Disc a[], double Lx, double Ly, int N){
 					if (collisionCheck(a[i],a[j],Lx,Ly)){					
 						i--;
 						//printf("T L collision\n");
-						break;
+					break;
 					}
 				}
 			}else if (a[i].ypos - 2*R < 0){
@@ -190,17 +182,25 @@ void placeDiscs(Disc a[], double Lx, double Ly, int N){
 }
 
 
-void bSort(int xsort[], Disc a[], int start, int N){
+void bSort(int xsort[], int ysort[], Disc a[], int N){
 	int temp;
 	int j;
-	for (int i = start; i < N-1; i++){
+	for (int i = 0; i < N-1; i++){
 		j = i;
 		while (a[xsort[j]].xpos > a[xsort[j+1]].xpos){
 			temp = xsort[j];
 			xsort[j] = xsort[j+1];
 			xsort[j+1] = temp;
 			j = j-1;
-			if (j < start) {break;}
+			if (j < 0) {break;}
+		}
+		j = i;
+		while (a[ysort[j]].ypos > a[ysort[j+1]].ypos){
+			temp = ysort[j];
+			ysort[j] = ysort[j+1];
+			ysort[j+1] = temp;
+			j = j-1;
+			if (j < 0) {break;}
 		}
 	}
 }
@@ -249,7 +249,7 @@ int checkLeaks(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly){
 		a[++M].r = a[ysort[bleaks]].r;
 		a[M].xpos = a[ysort[bleaks]].xpos;
 		a[M].ypos = a[ysort[bleaks]].ypos + Ly;
-		//printf("Bottom leak index: %i\n",ysort[bleaks]);
+		//printf("Bottom leak: (%4.2f,%4.2f)\n",a[M].xpos,a[M].ypos);
 	}
 	//-----------------------------------
 	while(a[ysort[tleaks]].ypos > Ly-R){
@@ -262,16 +262,16 @@ int checkLeaks(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly){
 		a[++M].r = a[ysort[N-tleaks]].r;
 		a[M].xpos = a[ysort[N-tleaks]].xpos;
 		a[M].ypos = a[ysort[N-tleaks]].ypos - Ly;
-		//printf("Top leaks index: %i \n",ysort[N-tleaks]);
+//		printf("Top leaks index: %i \n",ysort[N-tleaks]);
 		--tleaks;
 	}
-	printf("Leaks: %i\n",leaks);
+//	printf("Leaks: %i\n",leaks);
 	
 
 	return leaks;
 }
 
-void jiggleDisc(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly){
+void jiggleDisc(Disc a[], int xsort[], int ysort[], int N, int M, double Lx, double Ly){
 	double r = XI*rand0to1();
 	double theta = 2*PI*rand0to1();
 	
@@ -280,72 +280,88 @@ void jiggleDisc(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly)
 
 	int x = randi(N);
 	int y = 0;
+	//printf("Find y pos\n");
 	//Find corresponding y-sort position of x-sort pos.
 	while(a[xsort[x]].ypos > a[ysort[y]].ypos)
 		y++;
-	
-	int negx = 0, posx = 0;
+		
+	double oldx = a[xsort[x]].xpos;
+	double oldy = a[xsort[x]].ypos;
 
-	double dist = 0;
-	while (dist < 2*R + r){
-		negx++;
-		dist = a[xsort[x]].xpos-a[xsort[(x-negx+2*N)%N]].xpos;
-		if (dist < 0){dist += Lx;}
-		//printf("negx: %f\n",dist);
-	}
-	dist = 0;
-	while (dist < 2*R + r){
-		posx++;
-		dist = a[xsort[(x+posx)%N]].xpos-a[xsort[x]].xpos;
-		if (dist < 0){dist += Lx;}
-		//printf("posx: %f\n",dist);
-	}
-	
-	int negy = 0, posy = 0;
+	a[xsort[x]].xpos += dx;
+	a[xsort[x]].ypos += dy;
 
-	dist = 0;
-	while (dist < 2*R + r){
-		negy++;
-		dist = a[ysort[y]].ypos-a[ysort[(y-negy+2*N)%N]].ypos;
-		if (dist < 0){dist += Ly;}
-		//printf("negy: %f\n",dist);
-	}
-	dist = 0;
-	while (dist < 2*R + r){
-		posy++;
-		dist = a[ysort[(y+posy)%N]].ypos-a[ysort[y]].ypos;
-		if (dist < 0){dist += Ly;}
-		//printf("posy: %f\n",dist);
-	}
+	if (a[xsort[x]].xpos > Lx){a[xsort[x]].xpos -= Lx;}
+	if (a[xsort[x]].xpos < 0){a[xsort[x]].xpos += Lx;}
+	if (a[xsort[x]].ypos > Ly){a[xsort[x]].ypos -= Ly;}
+	if (a[xsort[x]].ypos < 0){a[xsort[x]].ypos += Ly;}	
 
-	bool collision = false;
-	//printf("test for collisions\n");
-	for (int i = x-negx; i < x; i++){
-		if (collisionCheck(a[xsort[(i+2*N)%N]],a[xsort[x]],dx,dy))
-			collision = true;
+	for (int i = 0; i < N; i++){
+		for (int j = 0; j < i; j++){
+			if (collisionCheck(a[i],a[j],0,0)){
+			//	printf("COLLISION!!!\t %i\t %4.2f\t %4.2f\n",i,a[i].xpos,a[i].ypos);
+				a[xsort[x]].xpos = oldx;
+				a[xsort[x]].ypos = oldy;
+				return;
+			}else if (a[i].xpos + 2*R > Lx){
+				if (collisionCheck(a[i],a[j],-Lx,0)){
+		//			printf("R collision\n");
+					a[xsort[x]].xpos = oldx;
+					a[xsort[x]].ypos = oldy;
+					return;
+				}
+			}else if (a[i].xpos - 2*R < 0){
+				if (collisionCheck(a[i],a[j],Lx,0)){
+		//			printf("L collision\n");
+					a[xsort[x]].xpos = oldx;
+					a[xsort[x]].ypos = oldy;
+					return;
+				}
+			}else if (a[i].ypos + 2*R > Ly){
+				if (collisionCheck(a[i],a[j],0,-Ly)){
+		//			printf("T collision\n");
+					a[xsort[x]].xpos = oldx;
+					a[xsort[x]].ypos = oldy;
+					return;
+				}else if (a[i].xpos + 2*R > Lx){
+					if (collisionCheck(a[i],a[j],-Lx,Ly)){
+						printf("T R collision\n");
+						a[xsort[x]].xpos = oldx;
+						a[xsort[x]].ypos = oldy;
+						return;
+					}
+				}else if (a[i].xpos - 2*R < 0){
+					if (collisionCheck(a[i],a[j],Lx,Ly)){					
+						printf("T L collision\n");
+						a[xsort[x]].xpos = oldx;
+						a[xsort[x]].ypos = oldy;
+						return;
+					}
+				}
+			}else if (a[i].ypos - 2*R < 0){
+				if (collisionCheck(a[i],a[j],0,Ly)){
+		//			printf("B collision\n");
+					a[xsort[x]].xpos = oldx;
+					a[xsort[x]].ypos = oldy;
+					return;
+				}else if (a[i].xpos + 2*R > Lx){
+					if (collisionCheck(a[i],a[j],-Lx,Ly)){
+						printf("B R collision\n");
+						a[xsort[x]].xpos = oldx;
+						a[xsort[x]].ypos = oldy;
+				return;
+					}
+				}else if (a[i].xpos - 2*R < 0){
+					if (collisionCheck(a[i],a[j],Lx,Ly)){					
+						printf("B T collision\n");
+						a[xsort[x]].xpos = oldx;
+						a[xsort[x]].ypos = oldy;
+						return;
+					}
+				}
+			} 
+		}
 	}
-	for (int i = x+1; i <= x+posx; i++){
-		if (collisionCheck(a[xsort[i%N]],a[xsort[x]],dx,dy))
-			collision = true;
-	}
-	
-	for (int i = y-negy; i < y; i++){
-		if (collisionCheck(a[ysort[(i+2*N)%N]],a[ysort[y]],dx,dy))
-			collision = true;
-	}
-	for (int i = y+1; i <= y+posy; i++){
-		if (collisionCheck(a[ysort[i%N]],a[ysort[y]],dx,dy))
-			collision = true;
-	}
-	if (!collision){
-		a[xsort[x]].xpos += dx;
-		a[xsort[x]].ypos += dy;
-		if ((x+posx<N) && ((x-negx) > 0)){bSort(xsort,a,x-negx,x+posx);}
-		else {bSort(xsort,a,0,N);}
-		if ((y+posy<N) && ((y-negy) > 0)){bSort(ysort,a,y-negy,x+posy);}
-		else {bSort(xsort,a,0,N);}
-		//printf("JIGGLE!\n");
-	}else{}
 }
 
 
@@ -363,9 +379,13 @@ void printDiscs(Disc a[], int N, int M, int num){
 	for (int i = 0; i < N; i++){
 		fprintf(discFile,"%f\t%f\t%f\n",a[i].xpos,a[i].ypos,a[i].r);
 	}
+	fclose(discFile);
 	
-	ghostFile = fopen("ghosts.dat","w");
+	sprintf(fname,"ghosts%i.dat",num);
+	ghostFile = fopen(fname,"w");
 	for (int i = N; i < M; i++){
 		fprintf(ghostFile,"%f\t%f\t%f\n",a[i].xpos,a[i].ypos,a[i].r);
+		//printf("%f\t%f\t%f\n",a[i].xpos,a[i].ypos,a[i].r);
 	}
+	fclose(ghostFile);
 }

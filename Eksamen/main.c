@@ -56,13 +56,12 @@ int main (int argc, char** argv){
 
 	bSort(xsort, ysort, discs, N);	
 	M = N + checkLeaks(discs, xsort, ysort, N, Lx, Ly);	
-	
 	int collisions = 0;
 	for (int i = 0; i < N; i++){
 		for (int j = i+1; j < M; j++){
 			if (collisionCheck(discs[i],discs[j],0,0)){
 				collisions++;
-				printf("(%4.2f,%4.2f)\t(%4.2f,%4.2f)\n",discs[i].xpos,discs[i].ypos,discs[j].xpos,discs[j].ypos);
+				printf("%i,%i\t(%4.2f,%4.2f)\t(%4.2f,%4.2f)\n",i,j,discs[i].xpos,discs[i].ypos,discs[j].xpos,discs[j].ypos);
 			}
 		}
 	}
@@ -74,14 +73,12 @@ int main (int argc, char** argv){
 	int jiggles = 5000;
 	for(int i = 0; i < jiggles; i++){
 		//printf("%i \n",i);
-		//if(!(i%(jiggles/100))){printf("%2.0f \n",100.*(i/(double)jiggles));}
+		if(!(i%(jiggles/100))){printf("%2.0f \n",100.*(i/(double)jiggles));}
 		jiggleDisc(discs, xsort, ysort, N, M, Lx, Ly);
-		bSort(xsort, ysort, discs,  N);
-		M = N + checkLeaks(discs, xsort, ysort, N, Lx, Ly);
 	}	
-	printf("\nM: %i\n",M);
-	printDiscs(discs, N, M, 1);
-
+	
+	bSort(xsort, ysort, discs, N);	
+	M = N + checkLeaks(discs, xsort, ysort, N, Lx, Ly);	
 	collisions = 0;
 	for (int i = 0; i < N; i++){
 		for (int j = i+1; j < M; j++){
@@ -91,8 +88,11 @@ int main (int argc, char** argv){
 			}
 		}
 	}
-
 	printf("Collisions %i\n",collisions);
+	
+	printf("\nM: %i\n",M);
+	printDiscs(discs, N, M, 1);
+	
 	return 0;
 }
 
@@ -118,64 +118,42 @@ void placeDiscs(Disc a[], double Lx, double Ly, int N){
 	a[0].r = R;
 	a[0].xpos = Lx*rand0to1();
 	a[0].ypos = Ly*rand0to1();
+	int M = N;
 	for (int i = 1; i < N; i++){
 		a[i].r =R;	
 		a[i].xpos = Lx*rand0to1();
 		a[i].ypos = Ly*rand0to1();
 		for (int j = 0; j < i; j++){
-			if (collisionCheck(a[i],a[j],0,0)){
-				i--;
-				//printf("COLLISION!!!\t %i\t %4.2f\t %4.2f\n",i,a[i].xpos,a[i].ypos);
-				break;
-			}else if (a[i].xpos + 2*R > Lx){
-				if (collisionCheck(a[i],a[j],-Lx,0)){
-					i--;
-					//printf("R collision\n");
-					break;
-				}
+			//General collision
+			if (collisionCheck(a[i],a[j],0,0)){i--;break;}
+			//Side collision
+			if (a[i].xpos + 2*R > Lx){
+				if (collisionCheck(a[i],a[j],-Lx,0)){i--;break;}
 			}else if (a[i].xpos - 2*R < 0){
-				if (collisionCheck(a[i],a[j],Lx,0)){
-					i--;
-					//printf("L collision\n");
-					break;
-				}
+				if (collisionCheck(a[i],a[j],Lx,0)){i--;break;}
 			}else if (a[i].ypos + 2*R > Ly){
-				if (collisionCheck(a[i],a[j],0,-Ly)){
-					i--;
-					//printf("T collision\n");
-					break;	
-				}else if (a[i].xpos + 2*R > Lx){
-					if (collisionCheck(a[i],a[j],-Lx,Ly)){
-						i--;
-						//printf("T R collision\n");
-						break;
-					}
-				}else if (a[i].xpos - 2*R < 0){
-					if (collisionCheck(a[i],a[j],Lx,Ly)){					
-						i--;
-						//printf("T L collision\n");
-					break;
-					}
-				}
+				if (collisionCheck(a[i],a[j],0,-Ly)){i--;break;}
 			}else if (a[i].ypos - 2*R < 0){
-				if (collisionCheck(a[i],a[j],0,Ly)){
-					i--;
-					//printf("B collision\n");
-					break;
-				}else if (a[i].xpos + 2*R > Lx){
-					if (collisionCheck(a[i],a[j],-Lx,Ly)){
-						i--;
-						//printf("B R collision\n");
-						break;
-					}
-				}else if (a[i].xpos - 2*R < 0){
-					if (collisionCheck(a[i],a[j],Lx,Ly)){					
-						i--;
-						//printf("B T collision\n");
-						break;
-					}
-				}
-			} 
+				if (collisionCheck(a[i],a[j],0,Ly)){i--;break;}
+			}
+			//Corner collision
+			if (((a[i].xpos +2*R) > Lx)&&((a[i].ypos + 2*R) > Ly)){
+				if (collisionCheck(a[i],a[j],-Lx,0)){i--;break;}
+				if (collisionCheck(a[i],a[j],0,-Ly)){i--;break;}
+				if (collisionCheck(a[i],a[j],-Lx,-Ly)){i--;break;}
+			}else if(((a[i].xpos +2*R) > Lx)&&((a[i].ypos - 2*R) < 0)){
+				if (collisionCheck(a[i],a[j],-Lx,0)){i--;break;}
+				if (collisionCheck(a[i],a[j],0,Ly)){i--;break;}
+				if (collisionCheck(a[i],a[j],-Lx,Ly)){i--;break;}
+			}else if (((a[i].xpos -2*R) < 0)&&((a[i].ypos - 2*R) < 0)){
+				if (collisionCheck(a[i],a[j],Lx,0)){i--;break;}
+				if (collisionCheck(a[i],a[j],0,Ly)){i--;break;}
+				if (collisionCheck(a[i],a[j],Lx,Ly)){i--;break;}
+			}else if (((a[i].xpos -2*R) < 0)&&((a[i].ypos + 2*R) > Ly)){
+				if (collisionCheck(a[i],a[j],Lx,0)){i--;break;}
+				if (collisionCheck(a[i],a[j],0,-Ly)){i--;break;}
+				if (collisionCheck(a[i],a[j],Lx,-Ly)){i--;break;}
+			}
 		}
 	}	 
 
@@ -209,6 +187,7 @@ int checkLeaks(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly){
 	double xdispl = 0, ydispl = 0;
 	int lleaks = 0, rleaks = N-1;
 	int bleaks = 0, tleaks = N-1;
+	int cleaks = 0; // corner leaks
 	int leaks = 0;
 	int M = N-1;
 	//-----------------------------------
@@ -216,13 +195,22 @@ int checkLeaks(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly){
 		lleaks++;
 	}
 	leaks += lleaks;
-	//printf("lleaks %i\n",lleaks);
 	while (lleaks > 0){
 		--lleaks;
 		a[++M].r = a[xsort[lleaks]].r;
 		a[M].xpos = a[xsort[lleaks]].xpos + Lx;
 		a[M].ypos = a[xsort[lleaks]].ypos;
-		//printf("Left leak index: %i\n",xsort[lleaks]);	
+		if (a[M].ypos < R){
+			a[++M].r = a[xsort[lleaks]].r;
+			a[M].xpos = a[xsort[lleaks]].xpos + Lx;
+			a[M].ypos = a[xsort[lleaks]].ypos + Ly;
+			cleaks++;
+		}else if (a[M].ypos > Ly-R){
+			a[++M].r = a[xsort[lleaks]].r;
+			a[M].xpos = a[xsort[lleaks]].xpos + Lx;
+			a[M].ypos = a[xsort[lleaks]].ypos - Ly;
+			cleaks++;
+		}	
 	}
 	//------------------------------------
 	while(a[xsort[rleaks]].xpos > Lx-R){
@@ -230,26 +218,34 @@ int checkLeaks(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly){
 	}
 	rleaks = N-1 - rleaks;
 	leaks += rleaks;
-	//printf("rleaks %i\n",rleaks);
 	while(rleaks > 0){
 		a[++M].r = a[xsort[N-rleaks]].r;
 		a[M].xpos = a[xsort[N-rleaks]].xpos - Lx;
 		a[M].ypos = a[xsort[N-rleaks]].ypos;
-		//printf("Right leak index: %i\n",xsort[N-rleaks]);
+		if (a[M].ypos < R){
+			a[++M].r = a[xsort[N-rleaks]].r;
+			a[M].xpos = a[xsort[N-rleaks]].xpos - Lx;
+			a[M].ypos = a[xsort[N-rleaks]].ypos + Ly;
+			cleaks++;
+		}else if (a[M].ypos > Ly-R){
+			a[++M].r = a[xsort[N-rleaks]].r;
+			a[M].xpos = a[xsort[N-rleaks]].xpos - Lx;
+			a[M].ypos = a[xsort[N-rleaks]].ypos - Ly;
+			cleaks++;
+		}	
+		
 		--rleaks;	
 	}
 	//-----------------------------------
 	while(a[ysort[bleaks]].ypos < R){
 		bleaks++;
 	}
-	//printf("bleaks %i\n",bleaks);
 	leaks += bleaks;
 	while (bleaks > 0){
 		--bleaks;
 		a[++M].r = a[ysort[bleaks]].r;
 		a[M].xpos = a[ysort[bleaks]].xpos;
 		a[M].ypos = a[ysort[bleaks]].ypos + Ly;
-		//printf("Bottom leak: (%4.2f,%4.2f)\n",a[M].xpos,a[M].ypos);
 	}
 	//-----------------------------------
 	while(a[ysort[tleaks]].ypos > Ly-R){
@@ -257,17 +253,13 @@ int checkLeaks(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly){
 	}
 	tleaks = N-1 - tleaks;
 	leaks += tleaks;
-	//printf("tleaks %i\n",tleaks);
 	while(tleaks > 0){
 		a[++M].r = a[ysort[N-tleaks]].r;
 		a[M].xpos = a[ysort[N-tleaks]].xpos;
 		a[M].ypos = a[ysort[N-tleaks]].ypos - Ly;
-//		printf("Top leaks index: %i \n",ysort[N-tleaks]);
 		--tleaks;
 	}
-//	printf("Leaks: %i\n",leaks);
-	
-
+	leaks += cleaks;
 	return leaks;
 }
 
@@ -298,67 +290,35 @@ void jiggleDisc(Disc a[], int xsort[], int ysort[], int N, int M, double Lx, dou
 
 	for (int i = 0; i < N; i++){
 		for (int j = 0; j < i; j++){
-			if (collisionCheck(a[i],a[j],0,0)){
-			//	printf("COLLISION!!!\t %i\t %4.2f\t %4.2f\n",i,a[i].xpos,a[i].ypos);
-				a[xsort[x]].xpos = oldx;
-				a[xsort[x]].ypos = oldy;
-				return;
-			}else if (a[i].xpos + 2*R > Lx){
-				if (collisionCheck(a[i],a[j],-Lx,0)){
-		//			printf("R collision\n");
-					a[xsort[x]].xpos = oldx;
-					a[xsort[x]].ypos = oldy;
-					return;
-				}
+			//General collision
+			if (collisionCheck(a[i],a[j],0,0)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+			//Side collision
+			if (a[i].xpos + 2*R > Lx){
+				if (collisionCheck(a[i],a[j],-Lx,0)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
 			}else if (a[i].xpos - 2*R < 0){
-				if (collisionCheck(a[i],a[j],Lx,0)){
-		//			printf("L collision\n");
-					a[xsort[x]].xpos = oldx;
-					a[xsort[x]].ypos = oldy;
-					return;
-				}
+				if (collisionCheck(a[i],a[j],Lx,0)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
 			}else if (a[i].ypos + 2*R > Ly){
-				if (collisionCheck(a[i],a[j],0,-Ly)){
-		//			printf("T collision\n");
-					a[xsort[x]].xpos = oldx;
-					a[xsort[x]].ypos = oldy;
-					return;
-				}else if (a[i].xpos + 2*R > Lx){
-					if (collisionCheck(a[i],a[j],-Lx,Ly)){
-						printf("T R collision\n");
-						a[xsort[x]].xpos = oldx;
-						a[xsort[x]].ypos = oldy;
-						return;
-					}
-				}else if (a[i].xpos - 2*R < 0){
-					if (collisionCheck(a[i],a[j],Lx,Ly)){					
-						printf("T L collision\n");
-						a[xsort[x]].xpos = oldx;
-						a[xsort[x]].ypos = oldy;
-						return;
-					}
-				}
+				if (collisionCheck(a[i],a[j],0,-Ly)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
 			}else if (a[i].ypos - 2*R < 0){
-				if (collisionCheck(a[i],a[j],0,Ly)){
-		//			printf("B collision\n");
-					a[xsort[x]].xpos = oldx;
-					a[xsort[x]].ypos = oldy;
-					return;
-				}else if (a[i].xpos + 2*R > Lx){
-					if (collisionCheck(a[i],a[j],-Lx,Ly)){
-						printf("B R collision\n");
-						a[xsort[x]].xpos = oldx;
-						a[xsort[x]].ypos = oldy;
-				return;
-					}
-				}else if (a[i].xpos - 2*R < 0){
-					if (collisionCheck(a[i],a[j],Lx,Ly)){					
-						printf("B T collision\n");
-						a[xsort[x]].xpos = oldx;
-						a[xsort[x]].ypos = oldy;
-						return;
-					}
-				}
+				if (collisionCheck(a[i],a[j],0,Ly)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+			}
+			//Corner collision
+			if (((a[i].xpos +2*R) > Lx)&&((a[i].ypos + 2*R) > Ly)){
+				if (collisionCheck(a[i],a[j],-Lx,0)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+				if (collisionCheck(a[i],a[j],0,-Ly)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+				if (collisionCheck(a[i],a[j],-Lx,-Ly)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+			}else if(((a[i].xpos +2*R) > Lx)&&((a[i].ypos - 2*R) < 0)){
+				if (collisionCheck(a[i],a[j],-Lx,0)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+				if (collisionCheck(a[i],a[j],0,Ly)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+				if (collisionCheck(a[i],a[j],-Lx,Ly)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+			}else if (((a[i].xpos -2*R) < 0)&&((a[i].ypos - 2*R) < 0)){
+				if (collisionCheck(a[i],a[j],Lx,0)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+				if (collisionCheck(a[i],a[j],0,Ly)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+				if (collisionCheck(a[i],a[j],Lx,Ly)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+			}else if (((a[i].xpos -2*R) < 0)&&((a[i].ypos + 2*R) > Ly)){
+				if (collisionCheck(a[i],a[j],Lx,0)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+				if (collisionCheck(a[i],a[j],0,-Ly)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
+				if (collisionCheck(a[i],a[j],Lx,-Ly)){a[xsort[x]].xpos=oldx;a[xsort[x]].ypos=oldy;return;}
 			} 
 		}
 	}

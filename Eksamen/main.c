@@ -4,9 +4,9 @@
 #include <memory.h>
 #include <ctime>
 
-const double R = .5;
+const double R = 1;
 const double PI = 4.*atan(1);
-const double XI = 2*R;
+const double XI = R/10;
 
 typedef struct{
 	double xpos;
@@ -24,7 +24,7 @@ int collisionCheck(Disc a, Disc b, double dx, double dy);
 void placeDiscs(Disc a[], double Lx, double Ly, int N);
 void bSort(int xsort[], int ysort[], Disc a[], int end);
 void jiggleDisc(Disc a[], int xsort[], int ysort[], int N, int M, double Lx, double Ly);
-void pushDisc(Disc a[], int xsort[], int ysort[], int n, int N);
+void pushDisc(Disc a[], int xsort[], int ysort[], int N, double l, double Lx, double Ly);
 int checkLeaks(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly);
 
 void printDiscs(Disc a[], int N, int M, int num);
@@ -70,13 +70,18 @@ int main (int argc, char** argv){
 	printf("M: %i\n",M);
 	printDiscs(discs, N, M, 0);
 
-	int jiggles = 5000;
+	int jiggles = 0; //1 << 20 ;
 	for(int i = 0; i < jiggles; i++){
 		//printf("%i \n",i);
 		if(!(i%(jiggles/100))){printf("%2.0f \n",100.*(i/(double)jiggles));}
 		jiggleDisc(discs, xsort, ysort, N, M, Lx, Ly);
 	}	
 	
+	int pushes = 100; double l = R/7;
+	for(int i = 0; i < pushes; i++){
+		pushDisc(discs, xsort, ysort, N, l, Lx, Ly); 
+	}
+
 	bSort(xsort, ysort, discs, N);	
 	M = N + checkLeaks(discs, xsort, ysort, N, Lx, Ly);	
 	collisions = 0;
@@ -90,7 +95,7 @@ int main (int argc, char** argv){
 	}
 	printf("Collisions %i\n",collisions);
 	
-	printf("\nM: %i\n",M);
+	printf("M: %i\n",M);
 	printDiscs(discs, N, M, 1);
 	
 	return 0;
@@ -232,8 +237,7 @@ int checkLeaks(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly){
 			a[M].xpos = a[xsort[N-rleaks]].xpos - Lx;
 			a[M].ypos = a[xsort[N-rleaks]].ypos - Ly;
 			cleaks++;
-		}	
-		
+		}			
 		--rleaks;	
 	}
 	//-----------------------------------
@@ -326,7 +330,59 @@ void jiggleDisc(Disc a[], int xsort[], int ysort[], int N, int M, double Lx, dou
 
 
 
-void pushDisc(Disc a[], int xsort[], int ysort[], int n, int N){
+void pushDisc(Disc a[], int xsort[], int ysort[], int N, double l, double Lx, double Ly){
+	double moved = 0;
+	double move = 0, jumpto;
+	int n = randi(N);
+	int m = (n+1)%N;
+	int temp;
+	double above, below, RR;
+	
+	while (moved <= l){
+		//printf("%i, %i\t",n,m);
+		above = a[xsort[m]].ypos-a[xsort[n]].ypos;
+		if (above <= 0){above += Ly;}
+		//printf("Above: %4.2f\n",above);
+
+		below = a[xsort[n]].ypos-a[xsort[m]].ypos;
+		if (below <= 0){below += Ly;}
+		if (below == 0){printf("Below: %4.2f\n",below);}
+
+		RR = a[xsort[n]].r+a[xsort[m]].r;
+		if (above < RR){
+			move = a[xsort[m]].xpos - sqrt(RR*RR-above*above) - a[xsort[n]].xpos;
+			if (move < 0){move += Lx;}
+			moved += move;
+			if (moved > l){a[xsort[n]].xpos += moved-l;break;}
+			a[xsort[n]].xpos += move;
+			if (a[xsort[n]].xpos > Lx){a[xsort[n]].xpos -= Lx;}
+			n=m; m=(++m)%N;
+		}
+		else if (below < RR){	
+			move = a[xsort[m]].xpos - sqrt(RR*RR-below*below) - a[xsort[n]].xpos;
+			if (move < 0){move += Lx;}
+			moved += move;
+			if (moved > l){a[xsort[n]].xpos += moved-l;break;}
+			a[xsort[n]].xpos += move;
+			if (a[xsort[n]].xpos > Lx){a[xsort[n]].xpos -= Lx;}
+			n=m; m=(++m)%N;
+		}
+		else{
+			move = a[xsort[m]].xpos - a[xsort[n]].xpos;
+			if (move < 0){move += Lx;}
+			moved += move;
+			if (move > l){a[xsort[n]].xpos += moved-l;break;}
+			a[xsort[n]].xpos += move;
+			if (a[xsort[n]].xpos > Lx){a[xsort[n]].xpos -= Lx;}
+
+			xsort[m] = temp;
+			xsort[m] = xsort[n];
+			xsort[n] = temp;
+			n=m; m=(++m)%N;
+		}
+	}
+	if (a[xsort[n]].xpos > Lx){a[xsort[n]].xpos -= Lx;}
+	//printf("\n");
 
 }
 

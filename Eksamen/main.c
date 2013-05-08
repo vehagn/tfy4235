@@ -4,7 +4,7 @@
 #include <memory.h>
 #include <ctime>
 
-const double R = 1;
+const double R = 1.;
 const double PI = 4.*atan(1);
 const double XI = R/10;
 
@@ -23,7 +23,7 @@ int collisionCheck(Disc a, Disc b, double dx, double dy);
 
 void placeDiscs(Disc a[], double Lx, double Ly, int N);
 void bSort(int xsort[], int ysort[], Disc a[], int end);
-void jiggleDisc(Disc a[], int xsort[], int ysort[], int N, int M, double Lx, double Ly);
+int  jiggleDisc(Disc a[], int xsort[], int ysort[], int N, int M, double Lx, double Ly);
 void pushDisc(Disc a[], int xsort[], int ysort[], int N, double l, double Lx, double Ly);
 int checkLeaks(Disc a[], int xsort[], int ysort[], int N, double Lx, double Ly);
 
@@ -73,12 +73,13 @@ int main (int argc, char** argv){
 	int jiggles = 0; //1 << 20 ;
 	for(int i = 0; i < jiggles; i++){
 		//printf("%i \n",i);
-		if(!(i%(jiggles/100))){printf("%2.0f \n",100.*(i/(double)jiggles));}
+		if(!(i%(jiggles/100))){printf("%03.0f \n",100.*(i/(double)jiggles));}
 		jiggleDisc(discs, xsort, ysort, N, M, Lx, Ly);
 	}	
 	
-	int pushes = 100; double l = R/7;
+	int pushes = 1000000; double l = R/100;
 	for(int i = 0; i < pushes; i++){
+		if(!(i%(pushes/100))){printf("%03.0f\n",100.*(i/(double)pushes));}
 		pushDisc(discs, xsort, ysort, N, l, Lx, Ly); 
 	}
 
@@ -97,7 +98,12 @@ int main (int argc, char** argv){
 	
 	printf("M: %i\n",M);
 	printDiscs(discs, N, M, 1);
-	
+
+	/*for(int i = 0; i < N; i++){
+		printf("%4.2f\t",discs[xsort[i]].xpos);
+	}*/
+	free(discs);
+	printf("\n");
 	return 0;
 }
 
@@ -108,9 +114,11 @@ int randi(int max){
 	return rand()%max;
 }
 
-double discDistanceSq(Disc a, Disc b){
-	return (a.xpos - b.xpos)*(a.xpos - b.xpos) + (a.ypos - b.ypos)*(a.ypos - b.ypos);
-}
+/*double discDistanceSq(Disc a, Disc b){
+	double xpos = min(abs(a.xpos - b.xpos),abs(b.xpos-a.xpos));
+	double ypos = min(abs(a.ypos - b.ypos),abs(b.ypos-a.ypos));
+	return (xpos)*(xpos) + (ypos)*(ypos);
+}*/
 
 int collisionCheck(Disc a, Disc b, double dx, double dy){
 	if (((a.xpos+dx-b.xpos) < 2*R) || ((a.ypos+dy-b.ypos) < 2*R)){
@@ -332,58 +340,100 @@ void jiggleDisc(Disc a[], int xsort[], int ysort[], int N, int M, double Lx, dou
 
 void pushDisc(Disc a[], int xsort[], int ysort[], int N, double l, double Lx, double Ly){
 	double moved = 0;
-	double move = 0, jumpto;
+	double move = 0, xdist = 0, ydist = 0, dist, mindist = Lx*Ly;
 	int n = randi(N);
 	int m = (n+1)%N;
-	int temp;
+	int k = m;
 	double above, below, RR;
+	double kxdist, kydist; 
+	RR = a[xsort[n]].r + a[xsort[m]].r;
 	
 	while (moved <= l){
-		//printf("%i, %i\t",n,m);
-		above = a[xsort[m]].ypos-a[xsort[n]].ypos;
-		if (above <= 0){above += Ly;}
-		//printf("Above: %4.2f\n",above);
-
-		below = a[xsort[n]].ypos-a[xsort[m]].ypos;
-		if (below <= 0){below += Ly;}
-		if (below == 0){printf("Below: %4.2f\n",below);}
-
-		RR = a[xsort[n]].r+a[xsort[m]].r;
-		if (above < RR){
-			move = a[xsort[m]].xpos - sqrt(RR*RR-above*above) - a[xsort[n]].xpos;
-			if (move < 0){move += Lx;}
-			moved += move;
-			if (moved > l){a[xsort[n]].xpos += moved-l;break;}
-			a[xsort[n]].xpos += move;
-			if (a[xsort[n]].xpos > Lx){a[xsort[n]].xpos -= Lx;}
-			n=m; m=(++m)%N;
+		mindist = Lx*Ly;	
+		while (xdist < 2*(R+l)){
+			xdist = a[xsort[m]].xpos - a[xsort[n]].xpos;
+			if (xdist < 0){xdist += Lx;}
+			above = a[xsort[m]].ypos - a[xsort[n]].ypos;
+			if (above < 0){above += Ly;}
+			below = a[xsort[n]].ypos - a[xsort[m]].ypos;
+			if (below < 0){below += Ly;}
+			ydist = (above<below)?(above):(below);
+			dist = sqrt(xdist*xdist + ydist*ydist) - RR;
+			if (dist <= 0){
+				mindist = Lx*Ly;
+				n = m;
+				m = (n+1)%N;
+				k = m;
+			}else if (mindist > dist){
+				mindist = dist;
+				kxdist = xdist;
+				kydist = ydist;				
+				k = m;
+			}
+			m = (m+1)%N;
 		}
-		else if (below < RR){	
-			move = a[xsort[m]].xpos - sqrt(RR*RR-below*below) - a[xsort[n]].xpos;
-			if (move < 0){move += Lx;}
-			moved += move;
-			if (moved > l){a[xsort[n]].xpos += moved-l;break;}
+		mindist = Lx*Ly;
+		if (((kxdist >= l-moved)||(kydist >= l-moved))&&(dist<RR)){
+			a[xsort[n]].xpos += (l - moved);
+			if (a[xsort[n]].xpos > Lx){a[xsort[n]].xpos -= Lx;}
+			//printf("free\n");
+			break;
+		}else{
+			move = kxdist - sqrt(RR*RR-kydist*kydist);
+			move = (move<l-moved)?(move):(l-moved);
 			a[xsort[n]].xpos += move;
 			if (a[xsort[n]].xpos > Lx){a[xsort[n]].xpos -= Lx;}
-			n=m; m=(++m)%N;
-		}
-		else{
-			move = a[xsort[m]].xpos - a[xsort[n]].xpos;
-			if (move < 0){move += Lx;}
 			moved += move;
-			if (move > l){a[xsort[n]].xpos += moved-l;break;}
-			a[xsort[n]].xpos += move;
-			if (a[xsort[n]].xpos > Lx){a[xsort[n]].xpos -= Lx;}
-
-			xsort[m] = temp;
-			xsort[m] = xsort[n];
-			xsort[n] = temp;
-			n=m; m=(++m)%N;
+			if (moved >= l){break;}
+			n = k;
+			m = (k+1)%N;
 		}
 	}
-	if (a[xsort[n]].xpos > Lx){a[xsort[n]].xpos -= Lx;}
-	//printf("\n");
-
+	bSort(xsort, ysort, a, N);
+	moved = 0; ydist = 0; mindist = Lx*Ly;
+	n = randi(N); m = (n+1)%N; k = m;
+	while (moved <= l){
+		mindist = Lx*Ly;	
+		while (ydist < 2*(R+l)){
+			ydist = a[ysort[m]].ypos - a[ysort[n]].ypos;
+			if (ydist < 0){ydist += Ly;}
+			above = a[ysort[m]].xpos - a[ysort[n]].xpos;
+			if (above < 0){above += Lx;}
+			below = a[ysort[n]].xpos - a[ysort[m]].xpos;
+			if (below < 0){below += Lx;}
+			xdist = (above<below)?(above):(below);
+			dist = sqrt(xdist*xdist + ydist*ydist) - RR;
+			if (dist <= 0){
+				mindist = Lx*Ly;
+				n = m;
+				m = (n+1)%N;
+				k = m;
+			}else if (mindist > dist){
+				mindist = dist;
+				kxdist = xdist;
+				kydist = ydist;				
+				k = m;
+			}
+			m = (m+1)%N;
+		}
+		mindist = Lx*Ly;
+		if (((kydist >= l-moved)||(kxdist >= l-moved))&&(dist<RR)){
+			a[ysort[n]].ypos += (l - moved);
+			if (a[ysort[n]].ypos > Ly){a[ysort[n]].ypos -= Ly;}
+			//printf("free\n");
+			break;
+		}else{
+			move = kydist - sqrt(RR*RR-kxdist*kxdist);
+			move = (move<l-moved)?(move):(l-moved);
+			a[ysort[n]].ypos += move;
+			if (a[ysort[n]].ypos > Ly){a[ysort[n]].ypos -= Ly;}
+			moved += move;
+			if (moved >= l){break;}
+			n = k;
+			m = (k+1)%N;
+		}
+	}
+	bSort(xsort, ysort, a, N);
 }
 
 void printDiscs(Disc a[], int N, int M, int num){
